@@ -90,11 +90,11 @@ def mark_block(coordinate, symbol, color):
 	pen.pencolor(BLACK)
 
 # Draw and fill color for Source and Goal
-def drawFillColorSourceGoal(sourceState, sourceLabel, goalState, goalLable, blockColor, lableColor):
+def drawFillColorSourceGoal(sourceState, sourceLabel, goalState, goalLable, blockColor, labelColor):
 	fill_block(sourceState, blockColor)
-	mark_block(sourceState, sourceLabel, lableColor)
+	mark_block(sourceState, sourceLabel, labelColor)
 	fill_block(goalState, blockColor)
-	mark_block(goalState, goalLable, lableColor)
+	mark_block(goalState, goalLable, labelColor)
 
 # Add new Obstacles between two Obstacles and Fill Color it
 def add_obstacles(obstacle1, obstacle2, polygons, color):
@@ -229,7 +229,7 @@ def HeuristicFunction(node, goalState):
 def EvaluationFunction(node, goalState):
 	return node.pathCost + HeuristicFunction(node, goalState)
 
-# Pop node with min path cost of frontier
+# Pop node with min evaluation of frontier
 def popMinEvaluation(search, goalState, frontier):
 	temp = Node()
 	min = 2147483647
@@ -285,7 +285,7 @@ def BFS(problem, mode):
 	frontier = []
 	frontier.append(node)
 	explored = []
-
+	
 	while 1:
 		if len(frontier) == 0:
 			return 0
