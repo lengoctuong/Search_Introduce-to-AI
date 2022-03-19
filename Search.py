@@ -275,7 +275,7 @@ def replaceNodeWithHigherEvaluation(search, node, goalState, frontier):
 			frontier[i] = node
 			break
 
-# Algorithm for BFS
+# Algorithm for Breadth first search
 def BFS(problem, mode):
 	node = Node(problem.sourceState, 0, '', 0)
 	if problem.goalState == node.state:
@@ -316,7 +316,7 @@ def BFS(problem, mode):
 				if mode == 1:
 					fill_block(childNode.state, PURPLE)
 
-# Algorithm for UCS
+# Algorithm for Uniform cost search
 def UCS(problem, mode):
 	node = Node(problem.sourceState, 0, '', 0)
 	frontier = []
@@ -356,9 +356,90 @@ def UCS(problem, mode):
 			if nodeHaveInFrontierWithHigherEvaluation('UCS', childNode, problem.goalState, frontier):
 				replaceNodeWithHigherEvaluation('UCS', childNode, problem.goalState, frontier)
 
-# Algorithm for Greedy best first search
-def IDS(problem, mode):
-	input()
+# Algorithm for Depth first search
+def DFS(problem, mode):
+	node = Node(problem.sourceState, 0, '', 0)
+	if problem.goalState == node.state:
+		print('===== COST = ' + str(childNode.pathCost) + ' =====')
+		return 1
+
+	frontier = []
+	frontier.append(node)
+
+	while 1:
+		if len(frontier) == 0:
+			return 0
+
+		if len(problem.actions(frontier[len(frontier) - 1].state)) == 0:
+			temp = frontier.pop()
+		else:
+			action = (problem.actions(frontier[len(frontier) - 1].state))[0]
+			childNode = child_node(problem, frontier[len(frontier) - 1], action)
+			
+			if not nodeHaveInFrontier(childNode, frontier):
+				if problem.goalState == childNode.state:
+					print('===== COST = ' + str(childNode.pathCost) + ' =====')
+
+					while childNode.parent != 0:
+						childNode = childNode.parent
+						if childNode.state != problem.sourceState:
+							mark_block(childNode.state, '+', BLACK)
+
+					if mode == 1:
+						drawFillColorSourceGoal(problem.sourceState, SOURCE_LABEL, problem.goalState, GOAL_LABEL, BLUE, WHITE)
+					
+					return 1
+
+				frontier.append(childNode)
+				if mode == 1:
+					fill_block(childNode.state, GREEN)
+
+# Algorithm for Depth limited search
+def DLS(problem, limit, mode):
+	return RecursiveDLS(Node(problem.sourceState, 0, '', 0), problem, limit, mode)
+
+# Algorithm for Recursive depth limited search
+def RecursiveDLS(node, problem, limit, mode):
+	if problem.goalState == node.state:
+		print('===== COST = ' + str(node.pathCost) + ' =====')
+
+		while node.parent != 0:
+			node = node.parent
+			if node.state != problem.sourceState:
+				mark_block(node.state, '+', BLACK)
+
+		if mode == 1:
+			drawFillColorSourceGoal(problem.sourceState, SOURCE_LABEL, problem.goalState, GOAL_LABEL, BLUE, WHITE)
+
+		return 1
+	elif limit == 0:
+		return -1
+	else:
+		cutoff = 0
+		for action in problem.actions(node.state):
+			childNode = child_node(problem, node, action)
+			if mode == 1:
+				fill_block(childNode.state, GREEN)
+
+			result = RecursiveDLS(childNode, problem, limit - 1, mode)
+			if result == -1:
+				cutoff = 1
+			if result == 1:
+				return result
+
+		if cutoff == 1:
+			return -cutoff
+		else:
+			return 0
+	
+# Algorithm for Iterative deepening depth first search
+def IDS(problem, depth, mode):
+	for d in range (depth + 1):
+		result = DLS(problem, d, mode)
+		if result == 1:
+			return result
+
+	return 0
 
 # Algorithm for Greedy best first search
 def GBFS(problem, mode):
@@ -544,7 +625,7 @@ if algorithm == 1:
 elif algorithm == 2:
 	UCS(problem, mode)
 elif algorithm == 3:
-	IDS(problem, mode)
+	IDS(problem, 100, mode)
 elif algorithm == 4:
 	GBFS(problem, mode)
 else:
